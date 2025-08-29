@@ -7,7 +7,7 @@ const DashboardHeader = () => {
 
         
       <div>
-        <label for="Search" className="relative  bg-slate-300">
+        <label htmlFor="Search" className="relative  bg-slate-300">
           <input
             type="text"
             id="Search"
