@@ -3,9 +3,12 @@
 import React, { useEffect, useState, use } from "react";
 import BudgetItem from "../../budgets/_components/BudgetItem";
 import AddExpense from "../_components/AddExpense";
+import ExpenseListTable from "../_components/ExpenseListTable";
 
 const Expenses = ({ params }) => {
   const [budgetInfo, setBudgetInfo] = useState([]);
+
+  const [expensesList, setExpensesList] = useState([])
 
   // Unwrap the params Promise
   const resolvedParams = use(params);
@@ -15,6 +18,7 @@ const Expenses = ({ params }) => {
       getBudgetInfo();
     }
   }, [resolvedParams?.id]);
+
 
   const getBudgetInfo = async () => {
     try {
@@ -26,10 +30,29 @@ const Expenses = ({ params }) => {
 
       const result = await response.json();
       setBudgetInfo(result);
+      getExpensesList()
     } catch (error) {
       console.error("Error fetching budget:", error);
     }
   };
+
+  const getExpensesList = async () => {
+    try {
+      const response = await fetch(`/api/expenses/latest?budgetId=${resolvedParams.id}`);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      // console.log(result);
+      setExpensesList(result)
+
+    } catch (error) {
+      console.error("Error fetching expenses:", error);
+    }
+  };
+
 
   return (
     <div className="p-7">
@@ -42,7 +65,14 @@ const Expenses = ({ params }) => {
           <div className="h-[150px] w-full bg-slate-200 rounded-lg animate-pulse">
           </div>
         }
-        <AddExpense budgetId={resolvedParams.id} refreshData={()=>getBudgetInfo()}/>
+        <AddExpense budgetId={resolvedParams.id} refreshData={()=>{
+          getBudgetInfo()
+          }}/>
+      </div>
+      <div className="mt-4">
+        <h2 className="font-bold text-xl">Latest Expenses</h2>
+        <ExpenseListTable expensesList={expensesList}
+        refreshData={()=>getBudgetInfo()}/>
       </div>
     </div>
   );

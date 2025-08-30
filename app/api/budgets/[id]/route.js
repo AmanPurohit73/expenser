@@ -1,3 +1,47 @@
+// import { NextResponse } from "next/server";
+// import { PrismaClient } from "@prisma/client";
+
+// const prisma = new PrismaClient();
+
+// export async function GET(request, { params }) {
+//   try {
+//     const resolvedParams = await params; // Unwrap params Promise
+//     const { id } = resolvedParams;
+
+//     if (!id) {
+//       return NextResponse.json(
+//         { error: "Budget ID is required" },
+//         { status: 400 }
+//       );
+//     }
+
+//     // Get budget by ID using Prisma
+//     const budget = await prisma.Budgets.findUnique({
+//       where: {
+//         id: parseInt(id), // Convert to number if your ID is numeric
+//       },
+//       include: {
+//         expenses: true, // Include related expenses if needed
+//         // Add other relations you want to include
+//       },
+//     });
+
+//     if (!budget) {
+//       return NextResponse.json({ error: "Budget not found" }, { status: 404 });
+//     }
+
+//     return NextResponse.json(budget);
+//   } catch (error) {
+//     console.error("Database error:", error);
+//     return NextResponse.json(
+//       { error: "Failed to fetch budget" },
+//       { status: 500 }
+//     );
+//   } finally {
+//     await prisma.$disconnect();
+//   }
+// }
+
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
@@ -15,14 +59,13 @@ export async function GET(request, { params }) {
       );
     }
 
-    // Get budget by ID using Prisma
-    const budget = await prisma.Budgets.findUnique({
+    // Get budget by ID using Prisma with expenses included
+    const budget = await prisma.budgets.findUnique({
       where: {
         id: parseInt(id), // Convert to number if your ID is numeric
       },
       include: {
-        expenses: true, // Include related expenses if needed
-        // Add other relations you want to include
+        expenses: true, // Include related expenses
       },
     });
 
@@ -30,7 +73,23 @@ export async function GET(request, { params }) {
       return NextResponse.json({ error: "Budget not found" }, { status: 404 });
     }
 
-    return NextResponse.json(budget);
+    // Calculate totals similar to your second API
+    const totalSpend = budget.expenses.reduce((sum, expense) => {
+      return sum + parseFloat(expense.amount || 0);
+    }, 0);
+
+    const totalItems = budget.expenses.length;
+    const remainingAmount = parseFloat(budget.amount) - totalSpend;
+
+    // Return budget with calculated totals
+    const budgetWithTotals = {
+      ...budget,
+      totalSpend: totalSpend,
+      totalItems: totalItems,
+      remainingAmount: remainingAmount,
+    };
+
+    return NextResponse.json(budgetWithTotals);
   } catch (error) {
     console.error("Database error:", error);
     return NextResponse.json(
