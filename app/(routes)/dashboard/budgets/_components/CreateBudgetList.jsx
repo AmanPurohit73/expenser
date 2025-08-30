@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 
-const CreateBudgetList = () => {
+const CreateBudgetList = ({onBudgetCreated}) => {
   const [emoji, setEmoji] = useState("🌞");
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [name, setName] = useState();
@@ -58,6 +58,7 @@ const CreateBudgetList = () => {
       toast.error("Something went wrong!");
     } 
   };
+  
 
   return (
     <div>

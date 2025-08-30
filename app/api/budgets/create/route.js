@@ -14,7 +14,7 @@ export async function POST(request) {
     }
 
     // Create budget in database using Prisma syntax
-    const result = await db.budgets.create({
+    const result = await db.Budgets.create({
       data: {
         name: name,
         amount: amount,

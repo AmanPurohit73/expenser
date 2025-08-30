@@ -19,4 +19,18 @@ model Budgets {
   amount    String
   icon      String?
   createdBy String
+  expenses  Expenses[]
+}
+
+model Expenses {
+  id       Int    @id @default(autoincrement())
+  name     String
+  amount   String
+  createdAt DateTime @default(now())
+  
+  
+  budgetId Int
+  budget   Budgets @relation(fields: [budgetId], references: [id], onDelete: Cascade)
+  
+  @@map("Expenses") 
 }

@@ -24,13 +24,15 @@ const Hero = () => {
           </p>
 
           {isSignedIn ? (
+            <Link href='/dashboard'>
             <div className="mt-4 flex justify-center gap-4 sm:mt-6">
               <p
                 className="inline-block rounded-xl border border-indigo-600 bg-indigo-600 px-5 py-3 font-medium text-white shadow-sm transition-colors hover:bg-indigo-700"
-              >
+                >
                 Continue to Dashboard
               </p>
             </div>
+                </Link>
           ) : (
             <div className="mt-4 flex justify-center gap-4 sm:mt-6">
               <Link
