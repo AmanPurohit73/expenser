@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 
-const CreateBudgetList = ({onBudgetCreated}) => {
+const CreateBudgetList = ({refreshData}) => {
   const [emoji, setEmoji] = useState("🌞");
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
   const [name, setName] = useState();
@@ -45,6 +45,7 @@ const CreateBudgetList = ({onBudgetCreated}) => {
       const result = await response.json();
 
       if (response.ok && result.success) {
+        refreshData()
         toast("New Budget Created! 🎉");
         // Clear the form
         setName("");
@@ -84,7 +85,7 @@ const CreateBudgetList = ({onBudgetCreated}) => {
                   {emoji}
                 </Button>
 
-                <div className="absolute">
+                <div className="absolute z-10">
                   <EmojiPicker
                     open={openEmojiPicker}
                     onEmojiClick={(e) => {

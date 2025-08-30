@@ -4,10 +4,10 @@ import BudgetList from './_components/BudgetList'
 const Budget = () => {
   return (
     <div className='p-10'>
-        <h2 className='font-bold text-3xl'> 
-
-      <BudgetList/>
+        <h2 className='font-bold text-3xl text-center'> 
+          My Budgets
         </h2>
+      <BudgetList/>
     </div>
   )
 }
