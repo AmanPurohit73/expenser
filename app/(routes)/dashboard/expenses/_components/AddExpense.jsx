@@ -29,11 +29,12 @@ const addNewExpense = async () => {
       }),
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
+ 
     const result = await response.json();
+
+    setAmount("")
+    setName("")
+
     if(result){
         toast("New Expense Added!");
         refreshData()
@@ -54,6 +55,7 @@ const addNewExpense = async () => {
       <div className="mt-2">
         <h2 className="text-black font-medium my-1">Expense Name</h2>
         <Input
+        value={name}
           placeholder="e.g Bedroom Decor"
           onChange={(e) => setName(e.target.value)}
         />
@@ -62,6 +64,7 @@ const addNewExpense = async () => {
       <div className="mt-2">
         <h2 className="text-black font-medium my-1">Expense Amount</h2>
         <Input
+        value={amount}
           placeholder="e.g 5000"
           onChange={(e) => setAmount(e.target.value)}
         />

@@ -1,6 +1,5 @@
 "use client";
 
-import { UserButton } from "@clerk/nextjs";
 import {
   LayoutDashboard,
   PiggyBank,
@@ -44,13 +43,15 @@ const SideNav = () => {
 
   return (
     <div className="h-screen p-5 border shadow ">
+      <Link href={'/'}>
       <Image
         src={"./logo.svg"}
         alt=""
         width={160}
         height={100}
-        className="ml-7"
-      />
+        className="ml-7 cursor-pointer"
+        />
+        </Link>
 
       <div className="mt-7">
         {menuList.map((menu, index) => (
@@ -66,10 +67,7 @@ const SideNav = () => {
         ))}
       </div>
 
-      <div className="fixed bottom-10 p-5 flex gap-5 items-center">
-        Profile
-        <UserButton />
-      </div>
+
     </div>
   );
 };

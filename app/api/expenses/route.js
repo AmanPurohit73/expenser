@@ -74,3 +74,45 @@ export async function DELETE(request) {
     );
   }
 }
+
+
+
+
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const email = searchParams.get("email");
+
+    if (!email) {
+      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+    }
+
+    // Get all expenses for the user's budgets
+    const expenses = await db.Expenses.findMany({
+      where: {
+        budget: {
+          createdBy: email,
+        },
+      },
+      include: {
+        budget: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json(expenses);
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch expenses" },
+      { status: 500 }
+    );
+  }
+}
