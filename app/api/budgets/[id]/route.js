@@ -100,3 +100,49 @@ export async function GET(request, { params }) {
     await prisma.$disconnect();
   }
 }
+
+
+
+
+export async function PUT(request, { params }) {
+  try {
+    const { id } = params;
+    const { name, amount, icon } = await request.json();
+
+    // Validate required fields
+    if (!name || !amount) {
+      return Response.json(
+        { error: "Name and amount are required fields" },
+        { status: 400 }
+      );
+    }
+
+    // Update the budget
+    const updatedBudget = await prisma.budgets.update({
+      where: {
+        id: parseInt(id), // or just id if using string IDs
+      },
+      data: {
+        name,
+        amount,
+        icon,
+      },
+    });
+
+    return Response.json({
+      success: true,
+      message: "Budget Updated!",
+      budget: updatedBudget,
+    });
+  } catch (error) {
+    console.error("Error updating budget:", error);
+
+    if (error.code === "P2025") {
+      return Response.json({ error: "Budget not found" }, { status: 404 });
+    }
+
+    return Response.json({ error: "Failed to update budget" }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
+}

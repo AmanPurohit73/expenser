@@ -100,3 +100,70 @@ export async function DELETE(request) {
     );
   }
 }
+
+
+
+
+export async function PUT(request) {
+  try {
+    console.log("PUT budget request received");
+
+    const { searchParams } = new URL(request.url);
+    const budgetId = searchParams.get("budgetId");
+    const { name, amount, icon } = await request.json();
+
+    console.log("BudgetId:", budgetId);
+    console.log("Update data:", { name, amount, icon });
+
+    if (!budgetId) {
+      return NextResponse.json(
+        { error: "BudgetId is required" },
+        { status: 400 }
+      );
+    }
+
+    if (!name || !amount) {
+      return NextResponse.json(
+        { error: "Name and amount are required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if budget exists before updating
+    const existingBudget = await db.Budgets.findUnique({
+      where: {
+        id: parseInt(budgetId),
+      },
+    });
+
+    if (!existingBudget) {
+      return NextResponse.json({ error: "Budget not found" }, { status: 404 });
+    }
+
+    // Update the budget
+    const result = await db.Budgets.update({
+      where: {
+        id: parseInt(budgetId),
+      },
+      data: {
+        name: name,
+        amount: amount,
+        icon: icon,
+      },
+    });
+
+    console.log("Budget updated successfully:", result);
+
+    return NextResponse.json({
+      success: true,
+      message: "Budget updated successfully",
+      budget: result,
+    });
+  } catch (error) {
+    console.error("Database error:", error);
+    return NextResponse.json(
+      { error: "Failed to update budget" },
+      { status: 500 }
+    );
+  }
+}

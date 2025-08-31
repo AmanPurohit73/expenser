@@ -1,5 +1,9 @@
 "use client";
-import React, { useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { PenBox } from "lucide-react";
+import React, { use, useEffect, useState } from "react";
+
 import {
   Dialog,
   DialogClose,
@@ -11,70 +15,62 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import EmojiPicker from "emoji-picker-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
-const CreateBudgetList = ({refreshData}) => {
-  const [emoji, setEmoji] = useState("🌞");
-  const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
-  const [name, setName] = useState();
-  const [amount, setAmount] = useState();
+const EditBudget = ({ budgetInfo, refreshData }) => {
+  console.log(budgetInfo);
 
+  const [emoji, setEmoji] = useState(budgetInfo?.icon);
+  const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
+  const [name, setName] = useState(budgetInfo?.name);
+  const [amount, setAmount] = useState(budgetInfo?.amount);
 
   const { user } = useUser();
 
-  const onCreateBudget = async () => {
+  useEffect(() => {
+    if (budgetInfo) {
+      setEmoji(budgetInfo?.icon);
+      setAmount(budgetInfo?.amount)
+      setName(budgetInfo?.name)
+    }
+  }, [budgetInfo]);
 
-    try {
-      // Customer places order to waiter (API call)
-      const response = await fetch("/api/budgets/create", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: name,
-          amount: amount,
-          createdBy: user?.primaryEmailAddress?.emailAddress,
-          icon: emoji,
-        }),
-      });
+  const onUpdateBudget = async () => {
+    const response = await fetch(`/api/budgets/${budgetInfo.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        amount: amount.toString(),
+        icon: emoji,
+      }),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
 
-      if (response.ok && result.success) {
-        refreshData()
-        toast("New Budget Created! 🎉");
-        // Clear the form
-        setName("");
-        setAmount("");
-        setEmoji("🌞");
-      } else {
-        toast.error(result.error || "Failed to create budget");
-      }
-    } catch (error) {
-      console.error("Error creating budget:", error);
-      toast.error("Something went wrong!");
-    } 
+    if (result.success) {
+      refreshData();
+      toast("Budget Updated Successfully!");
+    }
   };
-  
 
   return (
     <div>
       <Dialog>
         <DialogTrigger asChild>
-          <div className="bg-slate-100 p-10 rounded-md border-2 border-dashed flex items-center flex-col cursor-pointer hover:shadow-md transition-shadow">
-            <h2 className="text-3xl">+</h2>
-            <h2>Create New Budget</h2>
-          </div>
+          <Button className="bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg cursor-pointer flex gap-2">
+            {" "}
+            <PenBox />
+            Edit
+          </Button>
         </DialogTrigger>
 
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex text-center justify-center">
-              Create New Budget
+              Edit Budget
             </DialogTitle>
             <DialogDescription>
               <div
@@ -100,7 +96,7 @@ const CreateBudgetList = ({refreshData}) => {
                 <h2 className="text-black font-medium my-1">Budget Name</h2>
                 <Input
                   placeholder="e.g Home Decor"
-                  value={name || ""}
+                  defaultValue={budgetInfo.name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
@@ -110,7 +106,7 @@ const CreateBudgetList = ({refreshData}) => {
                 <Input
                   type="number"
                   placeholder="e.g 5000"
-                  value={amount || ""}
+                  defaultValue={budgetInfo.amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
               </div>
@@ -120,10 +116,10 @@ const CreateBudgetList = ({refreshData}) => {
             <DialogClose asChild>
               <Button
                 className="mt-5 w-full bg-blue-600 hover:bg-blue-700"
-                disabled={!(name && amount) }
-                onClick={() => onCreateBudget()}
+                disabled={!(name && amount)}
+                onClick={() => onUpdateBudget()}
               >
-                Create Budget
+                Update Budget
               </Button>
             </DialogClose>
           </DialogFooter>
@@ -133,4 +129,4 @@ const CreateBudgetList = ({refreshData}) => {
   );
 };
 
-export default CreateBudgetList;
+export default EditBudget;
