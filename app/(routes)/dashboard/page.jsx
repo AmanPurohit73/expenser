@@ -77,7 +77,7 @@ const page = () => {
 
         <div className="grid gap-5">
           <h2 className="font-bold text-xl flex justify-center">
-            Latest Budgets
+            Budgets Category
           </h2>
           {budgetList.map((budget, index) => (
             <BudgetItem budget={budget} key={index} />
