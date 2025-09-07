@@ -131,14 +131,6 @@ const Hero = () => {
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
                   </Button>
                 </Link>
-
-                <Button
-                  variant="outline"
-                  className="group border-2 border-gray-300 hover:border-indigo-300 bg-white/80 backdrop-blur-sm px-8 py-4 rounded-xl font-semibold text-lg hover:bg-indigo-50 transition-all duration-300 transform hover:scale-105"
-                >
-                  <Play className="w-5 h-5 mr-2 text-indigo-600 transition-transform duration-300 group-hover:scale-110" />
-                  Watch Demo
-                </Button>
               </>
             )}
           </div>
@@ -146,7 +138,7 @@ const Hero = () => {
         </div>
 
         {/* Dashboard Preview */}
-        <div className="relative max-w-6xl mx-auto">
+        <div className="relative max-w-6xl mx-auto" id="dashboard">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 blur-3xl transform rotate-1"></div>
           <div className="relative bg-white/10 backdrop-blur-sm rounded-3xl p-4 shadow-2xl border border-white/20">
             <div className="bg-white rounded-2xl overflow-hidden shadow-xl">
