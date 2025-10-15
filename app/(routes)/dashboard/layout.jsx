@@ -1,14 +1,13 @@
 "use client";
 import React, { useEffect } from "react";
 import SideNav from "./_components/SideNav";
-import DashboardHeader from "./_components/DashboardHeader";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
 const DashboardLayout = ({ children }) => {
   const { user } = useUser();
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     user && checkUserBudgets();
@@ -20,12 +19,11 @@ const DashboardLayout = ({ children }) => {
         `/api/budgets?email=${user.primaryEmailAddress.emailAddress}`
       );
       const result = await response.json();
-    //   console.log(result);
+      //   console.log(result);
 
-      if(result?.length === 0){
-        router.replace('/dashboard/budgets')
+      if (result?.length === 0) {
+        router.replace("/dashboard/budgets");
       }
-
     } catch (error) {
       console.error("Error fetching budgets:", error);
     }
@@ -36,10 +34,7 @@ const DashboardLayout = ({ children }) => {
       <div className="fixed md:w-64 hidden md:block">
         <SideNav />
       </div>
-      <div className="md:ml-64">
-        <DashboardHeader />
-        {children}
-      </div>
+      <div className="md:ml-64">{children}</div>
     </div>
   );
 };

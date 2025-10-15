@@ -12,45 +12,37 @@ const page = () => {
 
   const [budgetList, setBudgetList] = useState([]);
 
-  const [expensesList, setExpensesList] = useState([])
- 
+  const [expensesList, setExpensesList] = useState([]);
 
- 
+  const getAllExpenses = async () => {
+    const response = await fetch(
+      `/api/expenses?email=${user?.primaryEmailAddress?.emailAddress}`
+    );
+    const result = await response.json();
 
-  const getAllExpenses = async() => {
-    
-      const response = await fetch(
-        `/api/expenses?email=${user?.primaryEmailAddress?.emailAddress}`
-      );
-      const result = await response.json();
-
-      if (response.ok) {
-        // console.log(result)
-        setExpensesList(result)
-      } 
-    } 
-
+    if (response.ok) {
+      // console.log(result)
+      setExpensesList(result);
+    }
+  };
 
   useEffect(() => {
-    if ( user && user.primaryEmailAddress?.emailAddress) {
+    if (user && user.primaryEmailAddress?.emailAddress) {
       getBudgetList();
     }
   }, [user]);
 
-
   const getBudgetList = async () => {
-  
-      const response = await fetch(
-        `/api/budgets/with-totals?email=${user?.primaryEmailAddress?.emailAddress}`
-      );
-      const result = await response.json();
+    const response = await fetch(
+      `/api/budgets/with-totals?email=${user?.primaryEmailAddress?.emailAddress}`
+    );
+    const result = await response.json();
 
-      if (response.ok) {
-        // console.log(result)
-        setBudgetList(result);
-        getAllExpenses()
-
-      }
+    if (response.ok) {
+      // console.log(result)
+      setBudgetList(result);
+      getAllExpenses();
+    }
   };
 
   return (

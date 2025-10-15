@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -16,120 +17,110 @@ import { Input } from "@/components/ui/input";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
 
-const CreateBudgetList = ({refreshData}) => {
-  const [emoji, setEmoji] = useState("🌞");
+const CreateBudgetList = ({ refreshData }) => {
+  const [emoji, setEmoji] = useState("💰");
   const [openEmojiPicker, setOpenEmojiPicker] = useState(false);
-  const [name, setName] = useState();
-  const [amount, setAmount] = useState();
-
-
+  const [name, setName] = useState("");
+  const [amount, setAmount] = useState("");
   const { user } = useUser();
 
   const onCreateBudget = async () => {
-
     try {
-      // Customer places order to waiter (API call)
       const response = await fetch("/api/budgets/create", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: name,
-          amount: amount,
+          name,
+          amount,
           createdBy: user?.primaryEmailAddress?.emailAddress,
           icon: emoji,
         }),
       });
 
       const result = await response.json();
-
       if (response.ok && result.success) {
-        refreshData()
-        toast("New Budget Created! 🎉");
-        // Clear the form
+        refreshData();
+        toast.success("New budget created successfully!");
         setName("");
         setAmount("");
-        setEmoji("🌞");
-      } else {
-        toast.error(result.error || "Failed to create budget");
-      }
-    } catch (error) {
-      console.error("Error creating budget:", error);
+        setEmoji("💰");
+      } else toast.error(result.error || "Failed to create budget");
+    } catch {
       toast.error("Something went wrong!");
-    } 
+    }
   };
-  
 
   return (
-    <div>
-      <Dialog>
-        <DialogTrigger asChild>
-          <div className="bg-slate-100 p-10 rounded-md border-2 border-dashed flex items-center flex-col cursor-pointer hover:shadow-md transition-shadow">
-            <h2 className="text-3xl">+</h2>
-            <h2>Create New Budget</h2>
-          </div>
-        </DialogTrigger>
+    <Dialog>
+      <DialogTrigger asChild>
+        <div className="bg-white/70 border border-dashed border-gray-300 rounded-2xl p-10 flex flex-col justify-center items-center text-slate-600 hover:shadow-md hover:border-indigo-400 transition-all cursor-pointer">
+          <span className="text-4xl mb-1">+</span>
+          <p className="font-medium">Create New Budget</p>
+        </div>
+      </DialogTrigger>
 
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex text-center justify-center">
-              Create New Budget
-            </DialogTitle>
-            <DialogDescription>
-              <div
-                className="mt-5"
-                onClick={() => setOpenEmojiPicker(!openEmojiPicker)}
-              >
-                <Button variant="outline" size="lg" className="text-lg">
-                  {emoji}
-                </Button>
-
-                <div className="absolute z-10">
-                  <EmojiPicker
-                    open={openEmojiPicker}
-                    onEmojiClick={(e) => {
-                      setEmoji(e.emoji);
-                      setOpenEmojiPicker(false);
-                    }}
-                  />
-                </div>
+      <DialogContent className="rounded-2xl border border-gray-200 shadow-lg">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl font-semibold text-slate-800">
+            Create New Budget
+          </DialogTitle>
+          <DialogDescription>
+            <div
+              className="mt-5 flex justify-center"
+              onClick={() => setOpenEmojiPicker(!openEmojiPicker)}
+            >
+              <Button variant="outline" size="lg" className="text-xl">
+                {emoji}
+              </Button>
+              <div className="absolute z-10 mt-16">
+                <EmojiPicker
+                  open={openEmojiPicker}
+                  onEmojiClick={(e) => {
+                    setEmoji(e.emoji);
+                    setOpenEmojiPicker(false);
+                  }}
+                />
               </div>
+            </div>
 
-              <div className="mt-2">
-                <h2 className="text-black font-medium my-1">Budget Name</h2>
+            <div className="mt-5 space-y-3">
+              <div>
+                <h3 className="font-medium text-slate-700 mb-1">Budget Name</h3>
                 <Input
-                  placeholder="e.g Home Decor"
-                  value={name || ""}
+                  placeholder="e.g. Food, Rent, Travel"
+                  value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
 
-              <div className="mt-2">
-                <h2 className="text-black font-medium my-1">Budget Amount</h2>
+              <div>
+                <h3 className="font-medium text-slate-700 mb-1">
+                  Budget Amount
+                </h3>
                 <Input
                   type="number"
-                  placeholder="e.g 5000"
-                  value={amount || ""}
+                  placeholder="e.g. 5000"
+                  value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                 />
               </div>
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter className="sm:justify-start">
-            <DialogClose asChild>
-              <Button
-                className="mt-5 w-full bg-blue-600 hover:bg-blue-700"
-                disabled={!(name && amount) }
-                onClick={() => onCreateBudget()}
-              >
-                Create Budget
-              </Button>
-            </DialogClose>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+            </div>
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button
+              disabled={!name || !amount}
+              onClick={onCreateBudget}
+              className="mt-4 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl"
+            >
+              Create Budget
+            </Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
